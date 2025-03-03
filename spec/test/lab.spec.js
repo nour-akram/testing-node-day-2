@@ -30,11 +30,10 @@ describe("lab testing:", () => {
       expect(res.body.message).toContain("no user");
     });
   });
-    
+
   ///////////////////////////////////////////////////////////////////////////////
   describe("todos routes:", () => {
     let newUser, token, createdTodo, userIdInDB;
-   
 
     beforeAll(async () => {
       newUser = {
@@ -42,17 +41,16 @@ describe("lab testing:", () => {
         email: "nourakram286@gmail.com",
         password: "123",
       };
-        let userRegister = await req.post("/user/signup").send(newUser);
-        // console.log("regiter", userRegister.body.data);
-        
-        userIdInDB = userRegister.body.data._id;
-        // console.log("useriddb", userIdInDB);
-        
+      let userRegister = await req.post("/user/signup").send(newUser);
+      // console.log("regiter", userRegister.body.data);
 
-        let loginuser = await req.post("/user/login").send(newUser);
-        // console.log("login", loginuser.body.data);
-        
-        token = loginuser.body.data;
+      userIdInDB = userRegister.body.data._id;
+      // console.log("useriddb", userIdInDB);
+
+      let loginuser = await req.post("/user/login").send(newUser);
+      // console.log("login", loginuser.body.data);
+
+      token = loginuser.body.data;
 
       let todo = await req
         .post("/todo")
@@ -60,7 +58,7 @@ describe("lab testing:", () => {
         .set({ authorization: token });
       // console.log("todo", todo.body.data);
       createdTodo = todo.body.data;
-    //   console.log("Created Todo:", createdTodo);
+      //   console.log("Created Todo:", createdTodo);
     });
 
     it("req to patch( /todo/) with id only ,expect res status and res message to be as expected", async () => {
@@ -81,16 +79,34 @@ describe("lab testing:", () => {
       expect(res.body.data).toBeDefined();
     });
 
-     it("req to get( /todo/user) ,expect to get all user's todos", async () => {
-       let res = await req.get("/todo/user").set({ authorization: token });
+    it("req to get( /todo/user) ,expect to get all user's todos", async () => {
+      let res = await req.get("/todo/user").set({ authorization: token });
 
-       console.log("Response from GET /todo/user:", res.body); 
+      //    console.log("Response from GET /todo/user:", res.body);
+      expect(res.status).toBe(200);
+      expect(res.body.data).toBeDefined();
+    });
 
-    //    expect(res.status).toBe(200);
-    //    expect(res.body.data).toBeDefined();
-     });
+    it("req to get(/todo/user) ,expect to not get any todos for user who hasn't any todo", async () => {
+      let newUserWithoutTodos = {
+        name: "testUser",
+        email: "testuser@gmail.com",
+        password: "12345",
+      };
 
-    it("req to get( /todo/user) ,expect to not get any todos for user hasn't any todo", async () => {});
+      await req.post("/user/signup").send(newUserWithoutTodos);
+      let loginUser = await req.post("/user/login").send(newUserWithoutTodos);
+      let newUserToken = loginUser.body.data;
+
+      let res = await req
+        .get("/todo/user")
+        .set({ authorization: newUserToken });
+
+    //   console.log("Response from GET /todo/user for new user:", res.body);
+
+      expect(res.status).toBe(200);
+      expect(res.body.message).toContain("Couldn't find any todos for");
+    });
   });
 
   afterAll(async () => {

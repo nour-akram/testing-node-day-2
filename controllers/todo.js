@@ -22,7 +22,10 @@ const updateTitleTodoById = async (id,title) => {
 }
 
 
+
 const getUserTodos = async (userId) => {
+  // console.log("userid from fun getusertodo",userId,"type beta3aha is ",typeof userId);
+  
   const todos = await todosModel.find({ userId });
   if (todos.length === 0) {
     return [];

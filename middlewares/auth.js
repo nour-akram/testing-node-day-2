@@ -15,8 +15,8 @@ async function auth(req, res, next) {
         // console.log("Decoded Token:", decoded);
 
         req.id=decoded.id
-        console.log("Assigned req.id:", req.id); 
-        console.log(typeof req.id);
+        // console.log("Assigned req.id:", req.id); 
+        // console.log(typeof req.id);
         
         next()
       }

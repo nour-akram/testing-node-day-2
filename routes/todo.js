@@ -30,6 +30,31 @@ router.post("/", auth, async (req, res,next) => {
   }
 });
 
+
+
+/** get all todos for user=> id **/
+
+
+router.get("/user",auth, async (req, res,next) => {
+  try {
+    // console.log("User ID from Auth Middleware:", req.id); 
+    var todos = await getUserTodos(req.id);
+    todos.length > 0 && res.status(200).json({ data: todos });
+    todos.length == 0 &&
+      res
+        .status(200)
+        .json({ message: "Couldn't find any todos for " + req.id });
+  } catch (e) {
+    next(e)
+  }
+});
+///////////////////////////////////////
+
+
+
+
+
+
 /** get todo by id */
 router.get("/:id",auth, async (req, res,next) => {
   var { id } = req.params
@@ -65,23 +90,6 @@ router.patch("/:id",auth, async (req, res,next) => {
 });
 
 
-
-/** get all todos for user=> id **/
-
-
-router.get("/user",auth, async (req, res,next) => {
-  try {
-    console.log("User ID from Auth Middleware:", req.id); 
-    var todos = await getUserTodos(req.id);
-    todos.length > 0 && res.status(200).json({ data: todos });
-    todos.length == 0 &&
-      res
-        .status(200)
-        .json({ message: "Couldn't find any todos for " + req.id });
-  } catch (e) {
-    next(e)
-  }
-});
 
 
 router.delete("/",auth,async(_req,res,next)=>{
